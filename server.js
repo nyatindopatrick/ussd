@@ -40,7 +40,7 @@ app.post('*',(req,res) => {
       // let sms_message = `We are not able to verify the rider information provided.`;
        let rider_detail = txt[length - 1];
       if(rider_detail==="KMEE744N"){
-      //   let rider_name = rider_detail.name;
+   
         sms_message = `Rider Obwollo (KMEE744N) is registered with Makoma Sacco.`;
     } else {sms_message = `We are not able to verify the rider information provided.`}
         const credentials = {
