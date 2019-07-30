@@ -1,13 +1,18 @@
 const app = require('express')()
 const bodyParser = require('body-parser')
 const logger = require('morgan')
-const Riders = require("./models/Riders.js")
+
 const port = process.env.PORT || 3030
 
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+mongoose.connect( 'mongodb+srv://nyatindopatrick:dogobigy97@riders-ecfkm.mongodb.net/test?retryWrites=true&w=majority',
+{useNewUrlParser: true}
+)
+.then(()=>console.log('database connected successfully'))
+.catch(error=>console.log(error));
 
 app.get('*', (req, res) => {
   res.send('This is tutorial App on creating your first USSD app in 5 minutes or less by Ajala Abdulsamii <kgasta@gmail.com>')
@@ -34,13 +39,7 @@ app.post('*', (req, res) => {
   } else if (length === 2) {
     let initial_selection = txt[0];
     if(initial_selection == '1'){
-      
-      mongoose.connect( 'mongodb+srv://nyatindopatrick:dogobigy97@riders-ecfkm.mongodb.net/test?retryWrites=true&w=majority',
-      {useNewUrlParser: true}
-      )
-      .then(()=>console.log('database connected successfully'))
-      .catch(error=>console.log(error));
-
+     
       app.post('/riders', (req,res)=>{
         const {plateNumber}=req.body;
         
@@ -50,46 +49,51 @@ app.post('*', (req, res) => {
         Riders.findOne({plateNumber})
         .then(result=> {
           let rider = result;
-          
-          let sms_message ;
-          let client_phone_number = phoneNumber;
-           let rider_detail = txt[length - 1];
-          if(rider_detail===rider.plateNumber){
-          //   let rider_name = rider_detail.name;
-            sms_message = `Rider ${rider.name} ${rider.plateNumber} is registered with ${rider.sacco}.`;
-        } else {sms_message = `We are not able to verify the rider information provided.`}
-            const credentials = {
-              apiKey: '546c73eecdc1ab4ba9815fb43bdcd5129b4ce1b3a94ac9cdead025bfebef68a2',
-              username: 'nyatindopatrick',
+          if(rider) 
+          {
+            return res.send(`rider ${rider.name} of number plate ${rider.plateNumber} is registered with ${rider.sacco}` )
+          }else{
+            return res.status(500).send('user not registered');
           }
           
-          // Initialize the SDK
-          const AfricasTalking = require('africastalking')(credentials);
-          
-          // Get the SMS service
-          const sms = AfricasTalking.SMS;
-          
-          function sendMessage() {
-              const options = {
-                  // Set the numbers you want to send to in international format
-                  to: [client_phone_number],
-                  // Set your message
-                  message: sms_message
-                  // Set your shortCode or senderId
-              }
-          
-              // That’s it, hit send and we’ll take care of the rest
-              sms.send(options)
-                  .then(console.log)
-                  .catch(console.log);
-          }
-          
-          sendMessage();
         })
         
         })
-
-
+      
+      let sms_message ;
+      let client_phone_number = phoneNumber;
+       let rider_detail = txt[length - 1];
+      if(rider_detail===rider.plateNumber){
+      //   let rider_name = rider_detail.name;
+        sms_message = `Rider Obwollo (KMEE744N) is registered with Makoma Sacco.`;
+    } else {sms_message = `We are not able to verify the rider information provided.`}
+        const credentials = {
+          apiKey: '546c73eecdc1ab4ba9815fb43bdcd5129b4ce1b3a94ac9cdead025bfebef68a2',
+          username: 'nyatindopatrick',
+      }
+      
+      // Initialize the SDK
+      const AfricasTalking = require('africastalking')(credentials);
+      
+      // Get the SMS service
+      const sms = AfricasTalking.SMS;
+      
+      function sendMessage() {
+          const options = {
+              // Set the numbers you want to send to in international format
+              to: [client_phone_number],
+              // Set your message
+              message: sms_message
+              // Set your shortCode or senderId
+          }
+      
+          // That’s it, hit send and we’ll take care of the rest
+          sms.send(options)
+              .then(console.log)
+              .catch(console.log);
+      }
+      
+      sendMessage();
       };
       
       // initialize Africas Talking
