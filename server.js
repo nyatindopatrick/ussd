@@ -36,6 +36,8 @@ app.post('*', (req, res) => {
       // search rider
       // query from databse
       // let sms_message = `We are not able to verify the rider information provided.`;
+      let sms_message ;
+      let client_phone_number = phoneNumber;
        let rider_detail = txt[length - 1];
       if(rider_detail==="KMEE744N"){
       //   let rider_name = rider_detail.name;
