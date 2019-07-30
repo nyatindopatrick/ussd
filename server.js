@@ -8,11 +8,7 @@ app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
-mongoose.connect( 'mongodb+srv://nyatindopatrick:dogobigy97@riders-ecfkm.mongodb.net/test?retryWrites=true&w=majority',
-{useNewUrlParser: true}
-)
-.then(()=>console.log('database connected successfully'))
-.catch(error=>console.log(error));
+
 
 app.get('*', (req, res) => {
   res.send('This is tutorial App on creating your first USSD app in 5 minutes or less by Ajala Abdulsamii <kgasta@gmail.com>')
