@@ -1,50 +1,69 @@
-const app = require('express')()
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const app = express();
 const bodyParser = require('body-parser')
 const logger = require('morgan')
-
+const Riders = require("./models/Riders.js")
 const port = process.env.PORT || 3030
-
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
-
-
-
-app.get('*', (req, res) => {
-  res.send('This is tutorial App on creating your first USSD app in 5 minutes or less by Ajala Abdulsamii <kgasta@gmail.com>')
+app.post('/insert',(req,res, next)=> {
+  const {name, plateNumber, sacco}= req.body;
+  // console.log(r÷÷÷ider);
+  const newRider= new Riders({
+    name,
+    plateNumber,
+    sacco
+  })
+  newRider.save()
+  .then(rider=>res.json(rider))
+  .catch(err=> res.status(500).json({ succeess: false}));
 })
-
 app.post('*', (req, res) => {
-  let {sessionId, serviceCode, phoneNumber, text} = req.body;
-  let length = text.split("*").length;
-  let txt =text.split("*");
+  let {sessionId, serviceCode, phoneNumber, text} = req.body
+  var length = text.split('*').length;
+  var txt = text.split('*');
   if (text == '') {
     // This is the first request. Note how we start the response with CON
-    let response = `CON What would you want to check
-    1. Search Rider
-    2. Rate Rider`
+    let response = `CON Welcome to Fika Safe. Please pick an option below
+    1. Search a rider
+    2. Rate a rider
+    `
     res.send(response)
   } else if (text == '1') {
     // Business logic for first level response
-    let response = `CON Please enter the motorbike plate number:`
+    let response = `CON Please enter the motorbike plate number`
     res.send(response)
   } else if (text == '2') {
     // Business logic for first level response
-    let response = `CON Please enter the motorbike plate number:`
+    let response = `CON Enter the motorbike plate number:`
     res.send(response)
-  } else if (length === 2) {
+  }
+  else if(length === 2){
     let initial_selection = txt[0];
-    if(initial_selection == '1'){
-     
-
-      
-      let sms_message ;
-      let client_phone_number = phoneNumber;
+    // let phone_number = txt[length - 1];
+     let client_phone_number = phoneNumber;
+     let sms_message ;
+    if(initial_selection == '1'){a
+      // search rider
+      // query from databse
+      // let sms_message = `We are not able to verify the rider information provided.`;
        let rider_detail = txt[length - 1];
-      if(rider_detail==="KMEE744N"){
-      //   let rider_name = rider_detail.name;
-        sms_message = `Rider Obwollo (KMEE744N) is registered with Makoma Sacco.`;
-    } else {sms_message = `We are not able to verify the rider information provided.`}
+// db manenos
+Riders.findOne({plateNumber: rider_detail}).exec().then((result) => {
+  if(result){
+    let rider = result;
+      sms_message = `Rider ${rider.name} whose number plate: ${rider.plateNumber}is registered with ${rider.sacco}.`;
+      
+  } else {sms_message = `We are not able to verify the rider information provided.`}
+}
+).catch(err=>
+  {
+    res.status(500).send({message:`internal server error:${err}`})
+  })
+      
         const credentials = {
           apiKey: '546c73eecdc1ab4ba9815fb43bdcd5129b4ce1b3a94ac9cdead025bfebef68a2',
           username: 'nyatindopatrick',
@@ -95,15 +114,25 @@ app.post('*', (req, res) => {
     // let plate_number = txt[length - 2];
     // go to databse get rider information
     // set rating for rider and upate
+    // Business logic for first level response
     let response= 'END Thank you for your feedback.';
     // This is a terminal request. Note how we start the response with END
     
     res.send(response);
-  } else {
+  }
+    else {
     res.status(400).send('Bad request!')
   }
 })
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
+mongoose.connect( 'mongodb+srv://nyatindopatrick:dogobigy97@riders-ecfkm.mongodb.net/test?retryWrites=true&w=majority',
+{
+    // useMongoClient: true,
+    useNewUrlParser:true
+}
+).then(()=>{
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`)
+  })
+}).catch(err=>{
+  console.log(`unable to connect to databse:${err}`);
 })
