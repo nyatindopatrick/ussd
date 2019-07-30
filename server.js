@@ -50,51 +50,46 @@ app.post('*', (req, res) => {
         Riders.findOne({plateNumber})
         .then(result=> {
           let rider = result;
-          if(rider) 
-          {
-            return res.send(`rider ${rider.name} of number plate ${rider.plateNumber} is registered with ${rider.sacco}` )
-          }else{
-            return res.status(500).send('user not registered');
+          
+          let sms_message ;
+          let client_phone_number = phoneNumber;
+           let rider_detail = txt[length - 1];
+          if(rider_detail===rider.plateNumber){
+          //   let rider_name = rider_detail.name;
+            sms_message = `Rider ${rider.name} ${rider.plateNumber} is registered with ${rider.sacco}.`;
+        } else {sms_message = `We are not able to verify the rider information provided.`}
+            const credentials = {
+              apiKey: '546c73eecdc1ab4ba9815fb43bdcd5129b4ce1b3a94ac9cdead025bfebef68a2',
+              username: 'nyatindopatrick',
           }
           
+          // Initialize the SDK
+          const AfricasTalking = require('africastalking')(credentials);
+          
+          // Get the SMS service
+          const sms = AfricasTalking.SMS;
+          
+          function sendMessage() {
+              const options = {
+                  // Set the numbers you want to send to in international format
+                  to: [client_phone_number],
+                  // Set your message
+                  message: sms_message
+                  // Set your shortCode or senderId
+              }
+          
+              // That’s it, hit send and we’ll take care of the rest
+              sms.send(options)
+                  .then(console.log)
+                  .catch(console.log);
+          }
+          
+          sendMessage();
         })
         
         })
 
-      let sms_message ;
-      let client_phone_number = phoneNumber;
-       let rider_detail = txt[length - 1];
-      if(rider_detail===rider.plateNumber){
-      //   let rider_name = rider_detail.name;
-        sms_message = `Rider ${rider.name} ${rider.plateNumber} is registered with ${rider.sacco}.`;
-    } else {sms_message = `We are not able to verify the rider information provided.`}
-        const credentials = {
-          apiKey: '546c73eecdc1ab4ba9815fb43bdcd5129b4ce1b3a94ac9cdead025bfebef68a2',
-          username: 'nyatindopatrick',
-      }
-      
-      // Initialize the SDK
-      const AfricasTalking = require('africastalking')(credentials);
-      
-      // Get the SMS service
-      const sms = AfricasTalking.SMS;
-      
-      function sendMessage() {
-          const options = {
-              // Set the numbers you want to send to in international format
-              to: [client_phone_number],
-              // Set your message
-              message: sms_message
-              // Set your shortCode or senderId
-          }
-      
-          // That’s it, hit send and we’ll take care of the rest
-          sms.send(options)
-              .then(console.log)
-              .catch(console.log);
-      }
-      
-      sendMessage();
+
       };
       
       // initialize Africas Talking
