@@ -84,7 +84,7 @@ Riders.findOne({plateNumber: rider_detail}).exec().then((result) => {
               // Set your shortCode or senderId
           }
       
-          // That’s it, hit send and we’ll take care of the rest
+
           sms.send(options)
               .then(console.log)
               .catch(console.log);
