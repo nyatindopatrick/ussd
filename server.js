@@ -9,18 +9,7 @@ const port = process.env.PORT || 3030
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
-app.post('/insert',(req,res, next)=> {
-  const {name, plateNumber, sacco}= req.body;
-  // console.log(r÷÷÷ider);
-  const newRider= new Riders({
-    name,
-    plateNumber,
-    sacco
-  })
-  newRider.save()
-  .then(rider=>res.json(rider))
-  .catch(err=> res.status(500).json({ succeess: false}));
-})
+
 app.post('*', (req, res) => {
   let {sessionId, serviceCode, phoneNumber, text} = req.body
   var length = text.split('*').length;
