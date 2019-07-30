@@ -40,30 +40,12 @@ app.post('*', (req, res) => {
     let initial_selection = txt[0];
     if(initial_selection == '1'){
      
-      app.post('/riders', (req,res)=>{
-        const {plateNumber}=req.body;
-        
-        //simple validation
-        if(!plateNumber) return res.send('please enter plate number');
-        
-        Riders.findOne({plateNumber})
-        .then(result=> {
-          let rider = result;
-          if(rider) 
-          {
-            return res.send(`rider ${rider.name} of number plate ${rider.plateNumber} is registered with ${rider.sacco}` )
-          }else{
-            return res.status(500).send('user not registered');
-          }
-          
-        })
-        
-        })
+
       
       let sms_message ;
       let client_phone_number = phoneNumber;
        let rider_detail = txt[length - 1];
-      if(rider_detail===rider.plateNumber){
+      if(rider_detail==="KMEE744N"){
       //   let rider_name = rider_detail.name;
         sms_message = `Rider Obwollo (KMEE744N) is registered with Makoma Sacco.`;
     } else {sms_message = `We are not able to verify the rider information provided.`}
