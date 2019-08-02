@@ -10,24 +10,12 @@ app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// app.post('/insert',(req,res, next)=> {
-//   const {name, plateNumber, sacco}= req.body;
-//   const newRider= new Riders({
-//     name,
-//     plateNumber,
-//     sacco
-//   })
-//   newRider.save()
-//   .then(rider=>res.json(rider))
-//   .catch(err=> res.status(500).json({ succeess: false}));
-// })
+
 app.post('*', (req, res) => {
   let { sessionId, serviceCode, phoneNumber, text } = req.body
   var length = text.split('*').length;
   var txt = text.split('*');
   let initial_selection = txt[0];
-
-
 
 
   const credentials = {
@@ -50,14 +38,10 @@ app.post('*', (req, res) => {
       // Set your shortCode or senderId
     }
 
-    // That’s it, hit send and we’ll take care of the rest
     sms.send(options)
       .then(console.log)
       .catch(console.log);
   }
-
-
-
 
 
   if (text == '') {
@@ -68,11 +52,11 @@ app.post('*', (req, res) => {
     `
     res.send(response)
   } else if (text == '1') {
-    // Business logic for first level response
+
     let response = `CON Please enter the motorbike plate number`
     res.send(response)
   } else if (text == '2') {
-    // Business logic for first level response
+
     let response = `CON Enter the motorbike plate number:`
     res.send(response)
   }
@@ -82,12 +66,10 @@ app.post('*', (req, res) => {
     let sms_message;
 
     if (initial_selection == '1') {
-      // search rider
-      // query from databse
-      // let sms_message = `We are not able to verify the rider information provided.`;
+
       let rider_detail = txt[length - 1];
       console.log(rider_detail);
-      // db manenos
+
       Riders.findOne({ plateNumber: rider_detail }).exec().then((result) => {
           if (result) {
             let rider = result;
@@ -107,30 +89,20 @@ app.post('*', (req, res) => {
       });
     };
 
-    // initialize Africas Talking
-    // send SMS
-    // sendSMS(client_phone_number, sms_message);
-    // send sms back to customer
     let response = 'END Thank you for your query. You will receive an SMS shortly';
     res.send(response);
   }
   else if (initial_selection == '2') {
-    // rate rider
-    // Business logic for first level response
+
     let response = 'CON Rate a rider on a scale of 1 to 5';
-    // This is a terminal request. Note how we start the response with END
 
     res.send(response);
   }
 
   else if (length === 3) {
-    // let rider_rating = txt[length - 1];
-    // let plate_number = txt[length - 2];
-    // go to databse get rider information
-    // set rating for rider and upate
-    // Business logic for first level response
+
+
     let response = 'END Thank you for your feedback.';
-    // This is a terminal request. Note how we start the response with END
 
     res.send(response);
   }
